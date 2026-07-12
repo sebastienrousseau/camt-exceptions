@@ -1,0 +1,2 @@
+# Preserve official ISO 20022 schema files byte-for-byte (no EOL conversion)
+*.xsd -text
