@@ -15,4 +15,4 @@
 
 """camt-exceptions: ISO 20022 Exceptions & Investigations message generation."""
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"

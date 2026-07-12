@@ -7,7 +7,7 @@ payment it already dispatched — a duplicate, an erroneous amount, a fraud
 recall. Output is validated against the **official bundled XSD** before it's
 returned.
 
-> **Latest release: v0.0.1** — `camt.056.001.12` generation + validation, 4 MCP
+> **Latest release: v0.0.2** — `camt.056` + `camt.029` generation + validation, 4 MCP
 > tools over stdio, 100% branch coverage, for Python 3.10+. Part of the
 > [ISO 20022 MCP suite](#the-suite). Additional E&I messages (camt.029, camt.026,
 > camt.027, camt.087) plug into the same engine.
@@ -76,7 +76,7 @@ assert g.validate_xml("camt.056.001.12", xml)["is_valid"]   # True
 | Message | Name | Status |
 | --- | --- | --- |
 | `camt.056.001.12` | FI to FI Payment Cancellation Request | ✅ |
-| `camt.029` | Resolution of Investigation | planned |
+| `camt.029.001.14` | Resolution of Investigation | ✅ |
 | `camt.026` | Unable to Apply | planned |
 | `camt.027` | Claim Non-Receipt | planned |
 | `camt.087` | Request to Modify Payment | planned |

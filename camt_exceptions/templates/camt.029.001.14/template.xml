@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.029.001.14"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<RsltnOfInvstgtn>
+		<Assgnmt>
+			<Id>{{assignment_id}}</Id>
+			<Assgnr>
+				<Agt>
+					<FinInstnId>
+						<BICFI>{{assigner_agent_bic}}</BICFI>
+					</FinInstnId>
+				</Agt>
+			</Assgnr>
+			<Assgne>
+				<Agt>
+					<FinInstnId>
+						<BICFI>{{assignee_agent_bic}}</BICFI>
+					</FinInstnId>
+				</Agt>
+			</Assgne>
+			<CreDtTm>{{creation_date_time}}</CreDtTm>
+		</Assgnmt>
+		{%- if resolved_case_id %}
+		<RslvdCase>
+			<Id>{{resolved_case_id}}</Id>
+			<Cretr>
+				<Agt>
+					<FinInstnId>
+						<BICFI>{{assigner_agent_bic}}</BICFI>
+					</FinInstnId>
+				</Agt>
+			</Cretr>
+		</RslvdCase>
+		{%- endif %}
+		<Sts>
+			<Conf>{{confirmation_code}}</Conf>
+		</Sts>
+	</RsltnOfInvstgtn>
+</Document>

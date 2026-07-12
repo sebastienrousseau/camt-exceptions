@@ -68,6 +68,17 @@ MESSAGE_TYPES: dict[str, MessageSpec] = {
             "creation_date_time",
         ),
     ),
+    "camt.029.001.14": MessageSpec(
+        message_type="camt.029.001.14",
+        name="Resolution of Investigation",
+        required=(
+            "assignment_id",
+            "assigner_agent_bic",
+            "assignee_agent_bic",
+            "creation_date_time",
+            "confirmation_code",
+        ),
+    ),
 }
 
 

@@ -1,8 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.sebastienrousseau/camt-exceptions",
-  "description": "Generate + XSD-validate ISO 20022 E&I camt messages (camt.056 cancellation request).",
+  "description": "Generate + XSD-validate ISO 20022 E&I camt messages (camt.056 cancellation, camt.029 resolution).",
   "repository": { "url": "https://github.com/sebastienrousseau/camt-exceptions", "source": "github" },
-  "version": "0.0.1",
-  "packages": [ { "registryType": "pypi", "identifier": "camt-exceptions", "version": "0.0.1", "transport": { "type": "stdio" } } ]
+  "version": "0.0.2",
+  "packages": [ { "registryType": "pypi", "identifier": "camt-exceptions", "version": "0.0.2", "transport": { "type": "stdio" } } ]
 }

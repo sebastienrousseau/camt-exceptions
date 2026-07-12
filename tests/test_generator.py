@@ -110,3 +110,56 @@ def test_validate_xml_detects_invalid():
 def test_validate_xml_unknown_type_raises():
     with pytest.raises(ValueError, match="unsupported message type"):
         generator.validate_xml("camt.999.001.01", "<x/>")
+
+
+# --- camt.029 Resolution of Investigation -----------------------------------
+
+MT029 = "camt.029.001.14"
+
+
+def test_camt029_listed_and_required():
+    assert MT029 in {t["message_type"] for t in generator.list_message_types()}
+    assert "confirmation_code" in generator.get_required_fields(MT029)
+
+
+def test_camt029_generates_xsd_valid():
+    xml = generator.generate_message(
+        MT029,
+        {
+            "assignment_id": "RES-1",
+            "assigner_agent_bic": "COBADEFF",
+            "assignee_agent_bic": "DEUTDEFF",
+            "creation_date_time": "2026-03-03T10:00:00",
+            "confirmation_code": "CNCL",
+        },
+    )
+    assert "urn:iso:std:iso:20022:tech:xsd:camt.029.001.14" in xml
+    assert generator.validate_xml(MT029, xml)["is_valid"] is True
+
+
+def test_camt029_with_resolved_case_is_valid():
+    xml = generator.generate_message(
+        MT029,
+        {
+            "assignment_id": "RES-2",
+            "assigner_agent_bic": "COBADEFF",
+            "assignee_agent_bic": "DEUTDEFF",
+            "creation_date_time": "2026-03-03T10:00:00",
+            "confirmation_code": "RJCR",
+            "resolved_case_id": "CASE-9",
+        },
+    )
+    assert generator.validate_xml(MT029, xml)["is_valid"] is True
+
+
+def test_camt029_missing_confirmation_code():
+    with pytest.raises(ValueError, match="missing required field"):
+        generator.generate_message(
+            MT029,
+            {
+                "assignment_id": "RES-3",
+                "assigner_agent_bic": "COBADEFF",
+                "assignee_agent_bic": "DEUTDEFF",
+                "creation_date_time": "2026-03-03T10:00:00",
+            },
+        )
