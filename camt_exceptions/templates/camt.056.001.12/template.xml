@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.056.001.12"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FIToFIPmtCxlReq>
+		<Assgnmt>
+			<Id>{{assignment_id}}</Id>
+			<Assgnr>
+				<Agt>
+					<FinInstnId>
+						<BICFI>{{assigner_agent_bic}}</BICFI>
+					</FinInstnId>
+				</Agt>
+			</Assgnr>
+			<Assgne>
+				<Agt>
+					<FinInstnId>
+						<BICFI>{{assignee_agent_bic}}</BICFI>
+					</FinInstnId>
+				</Agt>
+			</Assgne>
+			<CreDtTm>{{creation_date_time}}</CreDtTm>
+		</Assgnmt>
+		<Undrlyg>
+			{%- if original_msg_id %}
+			<OrgnlGrpInfAndCxl>
+				<OrgnlMsgId>{{original_msg_id}}</OrgnlMsgId>
+				<OrgnlMsgNmId>{{original_msg_nm_id}}</OrgnlMsgNmId>
+				{%- if original_creation_date_time %}
+				<OrgnlCreDtTm>{{original_creation_date_time}}</OrgnlCreDtTm>
+				{%- endif %}
+			</OrgnlGrpInfAndCxl>
+			{%- endif %}
+			{%- for tx in transactions %}
+			<TxInf>
+				{%- if tx.cancellation_id %}
+				<CxlId>{{tx.cancellation_id}}</CxlId>
+				{%- endif %}
+				{%- if tx.original_end_to_end_id %}
+				<OrgnlEndToEndId>{{tx.original_end_to_end_id}}</OrgnlEndToEndId>
+				{%- endif %}
+				{%- if tx.original_tx_id %}
+				<OrgnlTxId>{{tx.original_tx_id}}</OrgnlTxId>
+				{%- endif %}
+				{%- if tx.original_uetr %}
+				<OrgnlUETR>{{tx.original_uetr}}</OrgnlUETR>
+				{%- endif %}
+				{%- if tx.original_interbank_settlement_amount %}
+				<OrgnlIntrBkSttlmAmt Ccy="{{tx.original_interbank_settlement_currency}}">{{tx.original_interbank_settlement_amount}}</OrgnlIntrBkSttlmAmt>
+				{%- endif %}
+				{%- if tx.original_interbank_settlement_date %}
+				<OrgnlIntrBkSttlmDt>{{tx.original_interbank_settlement_date}}</OrgnlIntrBkSttlmDt>
+				{%- endif %}
+				{%- if tx.cancellation_reason_cd %}
+				<CxlRsnInf>
+					<Rsn>
+						<Cd>{{tx.cancellation_reason_cd}}</Cd>
+					</Rsn>
+					{%- if tx.cancellation_reason_addtl_inf %}
+					<AddtlInf>{{tx.cancellation_reason_addtl_inf}}</AddtlInf>
+					{%- endif %}
+				</CxlRsnInf>
+				{%- endif %}
+			</TxInf>
+			{%- endfor %}
+		</Undrlyg>
+	</FIToFIPmtCxlReq>
+</Document>
