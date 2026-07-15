@@ -63,6 +63,13 @@ addopts = [
     "--cov-branch",
     "--cov-report=term-missing",
     "--cov-fail-under=100",
+    # Load/stress tests (marker ``perf``) are excluded from the default
+    # coverage-gated run, matching the suite-wide camt053 convention.
+    # Select them explicitly with ``-m perf --no-cov``.
+    "-m", "not perf",
+]
+markers = [
+    "perf: performance/load/stress tests (excluded from the default gate)",
 ]
 
 [tool.coverage.run]
