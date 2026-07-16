@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "camt-exceptions"
-version = "0.0.13"
+version = "0.0.14"
 description = "Generate and validate ISO 20022 Exceptions & Investigations (E&I) camt messages -- camt.056 Payment Cancellation Request and camt.029 Resolution of Investigation -- with an MCP server."
 authors = ["Sebastien Rousseau <sebastian.rousseau@gmail.com>"]
 license = "Apache-2.0"
