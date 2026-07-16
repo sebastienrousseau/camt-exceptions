@@ -64,12 +64,10 @@ assert g.validate_xml("camt.056.001.12", xml)["is_valid"]   # True
 
 ## Tools
 
-| Tool | What it does |
-| --- | --- |
-| `list_message_types` | List supported E&I message types and names. |
-| `get_required_fields` | Required top-level fields for a message type. |
-| `generate_message` | Generate a validated E&I XML message from a record (validated against the bundled XSD before return). |
-| `validate_xml` | Validate raw XML against a message type's bundled XSD. |
+- `list_message_types` — List supported E&I message types and names.
+- `get_required_fields` — Required top-level fields for a message type.
+- `generate_message` — Generate a validated E&I XML message from a record (validated against the bundled XSD before return).
+- `validate_xml` — Validate raw XML against a message type's bundled XSD.
 
 ## Supported messages
 
