@@ -16,6 +16,7 @@
 """Tests for the camt-exceptions MCP server tool surface."""
 
 import asyncio
+import json
 
 import pytest
 
@@ -89,6 +90,49 @@ def test_validate_xml_tool_happy_and_error():
     )["xml"]
     assert srv.validate_xml(MT, xml)["is_valid"] is True
     err = srv.validate_xml("camt.999.001.01", "<x/>")
+    assert "error" in err
+
+
+def test_build_investigation_message_prompt_registered():
+    prompts = {p.name: p for p in srv.server._prompt_manager.list_prompts()}
+    assert "build_investigation_message" in prompts
+    prompt = prompts["build_investigation_message"]
+    # The single argument carries a default, so it is optional.
+    args = {a.name: a for a in (prompt.arguments or [])}
+    assert "message_type" in args
+    assert args["message_type"].required is False
+
+
+def test_build_investigation_message_default_and_override():
+    default = srv.build_investigation_message()
+    assert MT in default
+    assert "list_message_types" in default
+    assert "get_required_fields" in default
+    assert "generate_message" in default
+    assert "validate_xml" in default
+    other = srv.build_investigation_message("camt.029.001.14")
+    assert "camt.029.001.14" in other
+
+
+def test_message_types_resource_registered_and_payload():
+    uris = {str(r.uri) for r in srv.server._resource_manager.list_resources()}
+    assert "camt-exceptions://message-types" in uris
+    payload = json.loads(srv.message_types_resource())
+    assert any(t["message_type"] == MT for t in payload["message_types"])
+
+
+def test_required_fields_resource_template_registered():
+    templates = {
+        r.uri_template for r in srv.server._resource_manager.list_templates()
+    }
+    assert "camt-exceptions://required-fields/{message_type}" in templates
+
+
+def test_required_fields_resource_happy_and_error():
+    ok = json.loads(srv.required_fields_resource(MT))
+    assert ok["message_type"] == MT
+    assert "assignment_id" in ok["required_fields"]
+    err = json.loads(srv.required_fields_resource("camt.999.001.01"))
     assert "error" in err
 
 
