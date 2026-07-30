@@ -39,6 +39,7 @@ Launching the server:
 The server communicates over stdio (FastMCP's default transport).
 """
 
+import json
 from typing import Annotated, Any
 
 from mcp.server.fastmcp import FastMCP
@@ -142,6 +143,69 @@ def validate_xml(
         return generator.validate_xml(message_type, xml)
     except ValueError as exc:
         return {"error": str(exc)}
+
+
+@server.prompt(
+    title="Build an Exceptions & Investigations message",
+)
+def build_investigation_message(
+    message_type: Annotated[str, Field(description=_MT_DESC)] = (
+        "camt.056.001.12"
+    ),
+) -> str:
+    """Guide the caller through building a validated E&I ``camt`` message."""
+    return (
+        f"Help me build a valid ISO 20022 Exceptions & Investigations "
+        f"message of type {message_type}. Work through the tools in order:\n"
+        f"1. Call list_message_types to confirm {message_type} is supported "
+        f"(and to discover its human-readable name).\n"
+        f"2. Call get_required_fields with message_type={message_type!r} to "
+        f"learn which top-level fields the record must supply.\n"
+        f"3. Call generate_message with message_type={message_type!r} and a "
+        f"record populated with those required fields (for camt.056, include "
+        f"a 'transactions' list with the original payment references and a "
+        f"cancellation reason code). The output XML is validated against the "
+        f"bundled XSD before it is returned.\n"
+        f"4. Call validate_xml with message_type={message_type!r} and the "
+        f"generated XML to double-check is_valid and surface any schema "
+        f"errors.\n"
+        f"Report the final XML and its validation result."
+    )
+
+
+@server.resource(
+    "camt-exceptions://message-types",
+    title="Supported E&I message types",
+    description=(
+        "The supported ISO 20022 Exceptions & Investigations message types "
+        "and their names, as JSON."
+    ),
+    mime_type="application/json",
+)
+def message_types_resource() -> str:
+    """Expose the supported E&I message types as a JSON resource."""
+    return json.dumps({"message_types": generator.list_message_types()})
+
+
+@server.resource(
+    "camt-exceptions://required-fields/{message_type}",
+    title="Required fields for an E&I message type",
+    description=(
+        "The required top-level fields for a given E&I message type, as JSON."
+    ),
+    mime_type="application/json",
+)
+def required_fields_resource(message_type: str) -> str:
+    """Expose a message type's required fields as a JSON resource."""
+    try:
+        return json.dumps(
+            {
+                "message_type": message_type,
+                "required_fields": generator.get_required_fields(message_type),
+            }
+        )
+    except ValueError as exc:
+        return json.dumps({"error": str(exc)})
 
 
 def main() -> None:
