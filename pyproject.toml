@@ -34,6 +34,12 @@ mcp = ">=1.2,<2"
 jinja2 = ">=3.0"
 xmlschema = ">=2.0"
 
+# Transitive, via `mcp` -> `pyjwt[crypto]`. Nothing in this tree
+# constrains it, so a resolver is free to pick a version in the
+# >=44.0.0,<50.0.0 range that GHSA flags as high severity. Floored
+# here so the patched line is the only resolvable one; the pins in
+# requirements/ already sit at 50.0.0.
+cryptography = ">=50.0.0"
 [tool.poetry.group.dev.dependencies]
 pytest = ">=9.0.3,<10.0.0"
 pytest-cov = ">=6.0.0,<8.0.0"
