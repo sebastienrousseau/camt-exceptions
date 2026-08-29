@@ -39,6 +39,19 @@ jobs:
       - name: Run tests
         run: pytest tests/ -v --tb=short
 
+      # Every worked example runs. An example that no longer works reads
+      # as verified and is not, which is worse than shipping none.
+      - name: Run the examples
+        run: |
+          for example in examples/*.py; do
+            echo "--- $example ---"
+            python "$example"
+          done
+
+      # Not a timing gate -- wall-clock is not comparable between runners.
+      - name: Run the benchmark
+        run: python benches/bench_investigations.py --quick
+
   lint:
     name: Lint & Type Check
     runs-on: ubuntu-latest
@@ -58,10 +71,10 @@ jobs:
           pip install ruff black mypy
 
       - name: Ruff check
-        run: ruff check camt_exceptions/ tests/
+        run: ruff check camt_exceptions/ tests/ examples/ benches/
 
       - name: Black check
-        run: black --check camt_exceptions/ tests/
+        run: black --check camt_exceptions/ tests/ examples/ benches/
 
       - name: Mypy
         run: mypy camt_exceptions/
