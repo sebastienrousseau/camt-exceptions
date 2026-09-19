@@ -124,20 +124,28 @@ Part of a family of vendor-neutral, Python-native ISO 20022 MCP servers:
   [`camt053-mcp`][camt053-mcp] · [`acmt001-mcp`][acmt001-mcp] — per-family servers.
 - [`reconcile-mcp`][reconcile-mcp] — statement/payment reconciliation.
 
+## Documentation
+
+- **Rendered docs:** [sebastienrousseau.github.io/camt-exceptions](https://sebastienrousseau.github.io/camt-exceptions/) — API reference, ADRs, roadmap, changelog
+- **Runnable examples:** [`examples/`](https://github.com/sebastienrousseau/camt-exceptions/tree/main/examples)
+- **Release history:** [CHANGELOG.md](https://github.com/sebastienrousseau/camt-exceptions/blob/main/CHANGELOG.md)
+
 ## Development
 
 ```sh
 git clone https://github.com/sebastienrousseau/camt-exceptions
 cd camt-exceptions
 python -m venv .venv && . .venv/bin/activate
-pip install -e . && pip install pytest pytest-cov ruff black mypy
+pip install -e . && pip install pytest pytest-cov hypothesis ruff black mypy interrogate "mutmut>=3.7,<4"
 pytest                      # 100% branch coverage gate; output is XSD-validated
 ruff check camt_exceptions tests && black --check camt_exceptions tests && mypy camt_exceptions
+interrogate -c pyproject.toml camt_exceptions   # 100% docstring gate
+mutmut run && mutmut export-cicd-stats && python scripts/mutation_gate.py --floor 90
 ```
 
 ## Licence
 
-Code licensed under the [Apache License, Version 2.0](LICENSE). Bundled ISO
+Code licensed under the [Apache License, Version 2.0](https://github.com/sebastienrousseau/camt-exceptions/blob/main/LICENSE). Bundled ISO
 20022 message schemas (`*.xsd`) are © ISO 20022 and redistributed under the
 ISO 20022 terms; they are the same schemas published at
 [iso20022.org](https://www.iso20022.org).

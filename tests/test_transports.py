@@ -98,13 +98,28 @@ def test_legacy_sdk_is_configured_through_settings(transport: str) -> None:
 
 
 def test_run_rejects_a_bad_transport_and_port() -> None:
-    with pytest.raises(ValueError, match="unknown transport 'carrier-pigeon'"):
+    with pytest.raises(ValueError) as info:
         _transports.run(_Modern(), "carrier-pigeon")
+    assert str(info.value) == (
+        "unknown transport 'carrier-pigeon'; "
+        "choose from stdio, streamable-http, sse"
+    )
     for bad in (0, 65536, -1):
         with pytest.raises(
             ValueError, match=f"between 1 and 65535, got {bad}"
         ):
             _transports.run(_Modern(), "sse", port=bad)
+
+
+def test_a_settings_object_without_host_is_treated_as_modern() -> None:
+    # Only a settings object that carries ``host`` marks the 1.x SDK; a
+    # bare one must not be written to, and run() gets the keyword form.
+    srv = _Modern()
+    srv.settings = argparse.Namespace()
+    _transports.run(srv, "sse", port=8001)
+    assert not hasattr(srv.settings, "host")
+    assert srv.calls[0][0] == ("sse",)
+    assert srv.calls[0][1]["port"] == 8001
 
 
 @pytest.mark.parametrize("port", [1, 65535])

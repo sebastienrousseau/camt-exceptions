@@ -14,3 +14,10 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 *.tmp
+
+# Hypothesis example database
+.hypothesis/
+# Mutation testing working copy (mutmut 3)
+mutants/
+# Sphinx build output
+docs/_build/

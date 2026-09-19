@@ -106,6 +106,7 @@ def test_build_investigation_message_prompt_registered():
 
 def test_build_investigation_message_default_and_override():
     default = srv.build_investigation_message()
+    assert default == srv.build_investigation_message(MT)
     assert MT in default
     assert "list_message_types" in default
     assert "get_required_fields" in default
@@ -145,3 +146,13 @@ def test_main_runs_server(monkeypatch):
     )
     srv.main([])
     assert called["ran"] is True
+
+
+def test_main_version_flag(capsys):
+    """``main(["--version"])`` prints the entry point's name and version."""
+    with pytest.raises(SystemExit) as info:
+        srv.main(["--version"])
+    assert info.value.code == 0
+    assert (
+        capsys.readouterr().out.strip() == f"camt-exceptions-mcp {__version__}"
+    )
