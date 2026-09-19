@@ -6,7 +6,7 @@
   "title": "camt-exceptions",
   "display_name": "Camt Exceptions MCP",
   "description": "Model Context Protocol (MCP) server for ISO 20022 Exceptions & Investigations (E&I). Generates and validates camt.056 Payment Cancellation Requests and camt.029 Resolution of Investigation messages, so agents can raise, structure and check payment-cancellation and investigation flows against the ISO 20022 schemas. Apache-2.0, pure Python over stdio.",
-  "version": "0.0.15",
+  "version": "0.0.18",
   "repository": "https://github.com/sebastienrousseau/camt-exceptions",
   "homepage": "https://camt-exceptions.com",
   "license": "Apache-2.0",

@@ -1,5 +1,7 @@
 # camt-exceptions: ISO 20022 Exceptions & Investigations, generated + XSD-valid
 
+[![Glama MCP server score](https://glama.ai/mcp/servers/sebastienrousseau/camt-exceptions/badges/score.svg)](https://glama.ai/mcp/servers/sebastienrousseau/camt-exceptions)
+
 **Generate and validate ISO 20022 Exceptions & Investigations (E&I) `camt`
 messages — with an [MCP][mcp] server.** Starts with **`camt.056`** (FI-to-FI
 Payment Cancellation Request): the message a bank sends to *recall or cancel* a
@@ -7,7 +9,7 @@ payment it already dispatched — a duplicate, an erroneous amount, a fraud
 recall. Output is validated against the **official bundled XSD** before it's
 returned.
 
-> **Latest release: v0.0.14** — `camt.056` + `camt.029` generation + validation, 4 MCP
+> **Latest release: v0.0.18** — `camt.056` + `camt.029` generation + validation, 4 MCP
 > tools over stdio, 100% branch coverage, for Python 3.10+. Part of the
 > [ISO 20022 MCP suite](#the-suite). Additional E&I messages (camt.029, camt.026,
 > camt.027, camt.087) plug into the same engine.
