@@ -10,7 +10,7 @@ recall. Output is validated against the **official bundled XSD** before it's
 returned.
 
 > **Latest release: v0.0.18** — `camt.056` + `camt.029` generation + validation, 4 MCP
-> tools over stdio, 100% branch coverage, for Python 3.10+. Part of the
+> tools over stdio, streamable HTTP or SSE, 100% branch coverage, for Python 3.10+. Part of the
 > [ISO 20022 MCP suite](#the-suite). Additional E&I messages (camt.029, camt.026,
 > camt.027, camt.087) plug into the same engine.
 
@@ -62,6 +62,32 @@ xml = g.generate_message("camt.056.001.12", {
     }],
 })
 assert g.validate_xml("camt.056.001.12", xml)["is_valid"]   # True
+```
+
+## Transports
+
+One command line, three transports:
+
+| Command | Transport | Endpoint | Protocol revisions |
+| :--- | :--- | :--- | :--- |
+| `camt-exceptions-mcp` | stdio | the client spawns the process | 2026-07-28, 2025-11-25 |
+| `camt-exceptions-mcp --transport streamable-http` | Streamable HTTP | `http://127.0.0.1:8000/mcp` | 2026-07-28 (stateless, `server/discover`) and 2025-11-25 (`initialize`, `Mcp-Session-Id`) on the same endpoint; responses stream as server-sent events, `GET` opens the server-to-client stream |
+| `camt-exceptions-mcp --transport sse` | HTTP+SSE (2024-11-05) | `http://127.0.0.1:8000/sse` and `/messages/` | for clients that still expect the older transport |
+
+`--host` and `--port` change the bind address (defaults `127.0.0.1` and
+`8000`). The HTTP transports carry no authentication of their own: bind
+loopback, or put the server behind a gateway you trust before binding a
+routable address. Every release is verified over streamable HTTP with
+[scout](https://github.com/sebastienrousseau/scout) in both protocol
+eras and over SSE with the MCP SDK client; see
+[ADR 0001](docs/adr/0001-three-transports-one-command-line.md).
+
+```json
+{
+  "mcpServers": {
+    "camt-exceptions": { "url": "http://127.0.0.1:8000/mcp" }
+  }
+}
 ```
 
 ## Tools
