@@ -22,6 +22,7 @@ import pytest
 
 pytest.importorskip("mcp")
 
+import camt_exceptions._mcp_compat as compat  # noqa: E402
 import camt_exceptions.server as srv  # noqa: E402
 from camt_exceptions import __version__  # noqa: E402
 
@@ -47,7 +48,7 @@ def test_all_tools_registered():
 
 
 def test_server_version_override():
-    assert srv.server._mcp_server.version == __version__
+    assert compat.server_version(srv.server) == __version__
 
 
 def test_list_message_types_tool():

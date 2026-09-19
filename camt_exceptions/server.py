@@ -36,28 +36,26 @@ Launching the server:
           }
         }
 
-The server communicates over stdio (FastMCP's default transport).
+The server communicates over stdio (the SDK's default transport).
 """
 
 import json
 from typing import Annotated, Any
 
-from mcp.server.fastmcp import FastMCP
 from mcp.types import ToolAnnotations
 from pydantic import Field
 
 from camt_exceptions import __version__, generator
+from camt_exceptions._mcp_compat import build_server
 
-server = FastMCP("camt-exceptions")
-# FastMCP does not expose a version kwarg; without this override the MCP SDK's
-# own version leaks into serverInfo.version, breaking manifest/runtime
-# coherence checks (e.g. Glama scoring).
-server._mcp_server.version = __version__
+# The shim picks FastMCP (mcp 1.x) or MCPServer (mcp 2.x) and reports
+# the package version in serverInfo either way.
+server = build_server("camt-exceptions", __version__)
 
 # Every tool is a pure, side-effect-free reader: it computes solely from its
 # arguments and the XSDs/templates bundled with this package. Nothing opens a
 # caller-supplied path or reaches an external system.
-_PURE_READ = ToolAnnotations(
+_PURE_READ = ToolAnnotations(  # type: ignore[call-arg]
     readOnlyHint=True,
     destructiveHint=False,
     idempotentHint=True,

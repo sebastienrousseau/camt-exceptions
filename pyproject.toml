@@ -30,7 +30,7 @@ camt-exceptions-mcp = "camt_exceptions.server:main"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
-mcp = ">=1.2,<2"
+mcp = ">=1.2,<3"
 jinja2 = ">=3.0"
 xmlschema = ">=2.0"
 
@@ -138,6 +138,12 @@ exclude = [
     ".venv/",
     ".eggs/",
 ]
+
+# The server object comes from the SDK-compat shim, so its decorators
+# are untyped from mypy's point of view on either major.
+[[tool.mypy.overrides]]
+module = "camt_exceptions.server"
+disallow_untyped_decorators = false
 
 [[tool.mypy.overrides]]
 module = ["mcp.*", "xmlschema.*", "jinja2.*"]
