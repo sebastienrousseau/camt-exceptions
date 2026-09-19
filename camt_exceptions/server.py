@@ -36,7 +36,8 @@ Launching the server:
           }
         }
 
-The server communicates over stdio (the SDK's default transport).
+stdio by default; ``--transport streamable-http`` or ``--transport sse``
+listens on ``--host``/``--port`` instead. See :mod:`camt_exceptions._cli`.
 """
 
 import json
@@ -45,7 +46,7 @@ from typing import Annotated, Any
 from mcp.types import ToolAnnotations
 from pydantic import Field
 
-from camt_exceptions import __version__, generator
+from camt_exceptions import __version__, _cli, generator
 from camt_exceptions._mcp_compat import build_server
 
 # The shim picks FastMCP (mcp 1.x) or MCPServer (mcp 2.x) and reports
@@ -206,9 +207,16 @@ def required_fields_resource(message_type: str) -> str:
         return json.dumps({"error": str(exc)})
 
 
-def main() -> None:
-    """Run the E&I MCP server over stdio (the ``camt-exceptions-mcp`` entry)."""
-    server.run()
+def main(argv: list[str] | None = None) -> None:
+    """Run the E&I MCP server (the ``camt-exceptions-mcp`` entry point).
+
+    stdio by default; ``--transport streamable-http`` or ``--transport sse``
+    listens on ``--host``/``--port`` instead. See :mod:`camt_exceptions._cli`.
+
+    Args:
+        argv: Command-line arguments; ``None`` reads ``sys.argv[1:]``.
+    """
+    _cli.serve(server, argv, "camt-exceptions-mcp", __version__)
 
 
 if __name__ == "__main__":

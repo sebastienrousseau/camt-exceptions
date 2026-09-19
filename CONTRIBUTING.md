@@ -19,6 +19,19 @@ python benches/bench_investigations.py --quick
 
 `pytest` fails below **100% branch coverage**.
 
+## Sign-off (required)
+
+Every commit **must** carry a `Signed-off-by:` trailer, which is you
+certifying the [Developer Certificate of Origin](DCO.txt). `git commit -s`
+adds it; the `DCO` workflow fails a pull request that lacks one. To fix an
+existing branch: `git rebase --signoff main && git push --force-with-lease`.
+
+## Decisions
+
+A change that shapes the server (a new transport, a new registration
+pattern, a change to the calling convention below) gets a record in
+[`docs/adr/`](docs/adr/index.md).
+
 ## The calling convention to preserve
 
 `generate_message` returns `{"xml": ...}` or `{"error": ...}`. It does not
@@ -61,6 +74,13 @@ Change `pyproject.toml` and `camt_exceptions/__init__.py` together, add a
 `CHANGELOG.md` entry, **and make sure the release is actually tagged.** This
 package sat at `0.0.16` in the tree with `0.0.15` on PyPI for weeks, which
 meant a security floor nobody received.
+
+## Governance
+
+Roles, decision making and how to become a maintainer are in
+[`GOVERNANCE.md`](GOVERNANCE.md); the release process is in
+[`RELEASING.md`](RELEASING.md); how to get help is in
+[`SUPPORT.md`](SUPPORT.md).
 
 ## Licence
 

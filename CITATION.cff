@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+cff-version: 1.2.0
+message: "If you use camt-exceptions in research or production write-ups, please cite it as below."
+type: software
+title: "camt-exceptions: Model Context Protocol server for ISO 20022 Exceptions & Investigations"
+abstract: >-
+  A Model Context Protocol server that generates and validates ISO 20022
+  Exceptions & Investigations messages: camt.056 FI-to-FI Payment
+  Cancellation Requests and camt.029 Resolutions of Investigation. Four
+  tools list the supported message types, return their required fields,
+  generate XML validated against the bundled XSD and validate raw XML.
+authors:
+  - family-names: Rousseau
+    given-names: Sebastien
+    email: sebastian.rousseau@gmail.com
+version: "0.0.18"
+date-released: "2026-08-29"
+license: "Apache-2.0 OR MIT"
+repository-code: "https://github.com/sebastienrousseau/camt-exceptions"
+url: "https://camt-exceptions.com"
+keywords:
+  - ISO 20022
+  - camt.056
+  - camt.029
+  - payment cancellation
+  - exceptions and investigations
+  - Model Context Protocol
+  - MCP
+  - AI agents
+  - banking
