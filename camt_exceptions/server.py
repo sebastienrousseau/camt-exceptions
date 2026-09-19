@@ -68,24 +68,11 @@ _MT_DESC = (
 )
 
 
-@server.tool(
-    annotations=_PURE_READ,
-    description=(
-        "List the supported ISO 20022 Exceptions & Investigations message "
-        "types (e.g. camt.056 payment cancellation request) and their names."
-    ),
-)
 def list_message_types() -> dict[str, Any]:
     """List supported E&I message types."""
     return {"message_types": generator.list_message_types()}
 
 
-@server.tool(
-    annotations=_PURE_READ,
-    description=(
-        "Return the required top-level fields for an E&I message type."
-    ),
-)
 def get_required_fields(
     message_type: Annotated[str, Field(description=_MT_DESC)],
 ) -> dict[str, Any]:
@@ -99,16 +86,6 @@ def get_required_fields(
         return {"error": str(exc)}
 
 
-@server.tool(
-    annotations=_PURE_READ,
-    description=(
-        "Generate a validated ISO 20022 E&I XML message from a record. For "
-        "camt.056, the record cancels/recalls a previously sent payment "
-        "(assignment ids + agent BICs + a list of 'transactions' with the "
-        "original payment references and a cancellation reason code). Output "
-        "is validated against the bundled XSD before it is returned."
-    ),
-)
 def generate_message(
     message_type: Annotated[str, Field(description=_MT_DESC)],
     record: Annotated[
@@ -126,13 +103,6 @@ def generate_message(
         return {"error": str(exc)}
 
 
-@server.tool(
-    annotations=_PURE_READ,
-    description=(
-        "Validate raw ISO 20022 XML against an E&I message type's bundled XSD; "
-        "returns is_valid plus any schema errors."
-    ),
-)
 def validate_xml(
     message_type: Annotated[str, Field(description=_MT_DESC)],
     xml: Annotated[str, Field(description="Raw ISO 20022 XML to validate.")],
@@ -144,9 +114,6 @@ def validate_xml(
         return {"error": str(exc)}
 
 
-@server.prompt(
-    title="Build an Exceptions & Investigations message",
-)
 def build_investigation_message(
     message_type: Annotated[str, Field(description=_MT_DESC)] = (
         "camt.056.001.12"
@@ -172,28 +139,11 @@ def build_investigation_message(
     )
 
 
-@server.resource(
-    "camt-exceptions://message-types",
-    title="Supported E&I message types",
-    description=(
-        "The supported ISO 20022 Exceptions & Investigations message types "
-        "and their names, as JSON."
-    ),
-    mime_type="application/json",
-)
 def message_types_resource() -> str:
     """Expose the supported E&I message types as a JSON resource."""
     return json.dumps({"message_types": generator.list_message_types()})
 
 
-@server.resource(
-    "camt-exceptions://required-fields/{message_type}",
-    title="Required fields for an E&I message type",
-    description=(
-        "The required top-level fields for a given E&I message type, as JSON."
-    ),
-    mime_type="application/json",
-)
 def required_fields_resource(message_type: str) -> str:
     """Expose a message type's required fields as a JSON resource."""
     try:
@@ -205,6 +155,63 @@ def required_fields_resource(message_type: str) -> str:
         )
     except ValueError as exc:
         return json.dumps({"error": str(exc)})
+
+
+# Tools, the prompt and the resources are registered here, in definition
+# order, rather than with decorators on each function: mutmut 3 never
+# mutates a decorated function, so the decorator form left every handler
+# outside mutation testing. The registered object is the same function,
+# docstring and signature, and clients list the tools in this order.
+server.tool(
+    annotations=_PURE_READ,
+    description=(
+        "List the supported ISO 20022 Exceptions & Investigations message "
+        "types (e.g. camt.056 payment cancellation request) and their names."
+    ),
+)(list_message_types)
+server.tool(
+    annotations=_PURE_READ,
+    description=(
+        "Return the required top-level fields for an E&I message type."
+    ),
+)(get_required_fields)
+server.tool(
+    annotations=_PURE_READ,
+    description=(
+        "Generate a validated ISO 20022 E&I XML message from a record. For "
+        "camt.056, the record cancels/recalls a previously sent payment "
+        "(assignment ids + agent BICs + a list of 'transactions' with the "
+        "original payment references and a cancellation reason code). Output "
+        "is validated against the bundled XSD before it is returned."
+    ),
+)(generate_message)
+server.tool(
+    annotations=_PURE_READ,
+    description=(
+        "Validate raw ISO 20022 XML against an E&I message type's bundled XSD; "
+        "returns is_valid plus any schema errors."
+    ),
+)(validate_xml)
+server.prompt(
+    title="Build an Exceptions & Investigations message",
+)(build_investigation_message)
+server.resource(
+    "camt-exceptions://message-types",
+    title="Supported E&I message types",
+    description=(
+        "The supported ISO 20022 Exceptions & Investigations message types "
+        "and their names, as JSON."
+    ),
+    mime_type="application/json",
+)(message_types_resource)
+server.resource(
+    "camt-exceptions://required-fields/{message_type}",
+    title="Required fields for an E&I message type",
+    description=(
+        "The required top-level fields for a given E&I message type, as JSON."
+    ),
+    mime_type="application/json",
+)(required_fields_resource)
 
 
 def main(argv: list[str] | None = None) -> None:
