@@ -1,6 +1,14 @@
+<!-- SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com> -->
+<!-- SPDX-License-Identifier: Apache-2.0 OR MIT -->
+
 # camt-exceptions: ISO 20022 Exceptions & Investigations, generated + XSD-valid
 
+[![Build Status](https://github.com/sebastienrousseau/camt-exceptions/actions/workflows/ci.yml/badge.svg)](https://github.com/sebastienrousseau/camt-exceptions/actions)
+[![PyPI version](https://img.shields.io/pypi/v/camt-exceptions.svg)](https://pypi.org/project/camt-exceptions/)
 [![Glama MCP server score](https://glama.ai/mcp/servers/sebastienrousseau/camt-exceptions/badges/score.svg)](https://glama.ai/mcp/servers/sebastienrousseau/camt-exceptions)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/sebastienrousseau/camt-exceptions/badge)](https://scorecard.dev/viewer/?push_pull=true&repo=github.com/sebastienrousseau/camt-exceptions)
+[![License](https://img.shields.io/badge/License-Apache_2.0_OR_MIT-blue.svg)](LICENSE)
+[![Python Version](https://img.shields.io/pypi/pyversions/camt-exceptions.svg)](https://pypi.org/project/camt-exceptions/)
 
 **Generate and validate ISO 20022 Exceptions & Investigations (E&I) `camt`
 messages — with an [MCP][mcp] server.** Starts with **`camt.056`** (FI-to-FI
@@ -9,7 +17,7 @@ payment it already dispatched — a duplicate, an erroneous amount, a fraud
 recall. Output is validated against the **official bundled XSD** before it's
 returned.
 
-> **Latest release: v0.0.18** — `camt.056` + `camt.029` generation + validation, 4 MCP
+> **Latest release: v0.0.19** — `camt.056` + `camt.029` generation + validation, 4 MCP
 > tools over stdio, streamable HTTP or SSE, 100% branch coverage, for Python 3.10+. Part of the
 > [ISO 20022 MCP suite](#the-suite). Additional E&I messages (camt.029, camt.026,
 > camt.027, camt.087) plug into the same engine.
@@ -137,10 +145,10 @@ ruff check camt_exceptions tests && black --check camt_exceptions tests && mypy 
 
 ## Licence
 
-Code licensed under the [Apache License, Version 2.0](LICENSE). Bundled ISO
-20022 message schemas (`*.xsd`) are © ISO 20022 and redistributed under the
-ISO 20022 terms; they are the same schemas published at
-[iso20022.org](https://www.iso20022.org).
+Licensed under the [Apache License, Version 2.0](LICENSE-APACHE) or the
+[MIT License](LICENSE-MIT), at your option. Bundled ISO 20022 message schemas
+(`*.xsd`) are © ISO 20022 and redistributed under the ISO 20022 terms; they
+are the same schemas published at [iso20022.org](https://www.iso20022.org).
 
 ---
 

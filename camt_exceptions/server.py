@@ -71,8 +71,18 @@ _MT_DESC = (
 @server.tool(
     annotations=_PURE_READ,
     description=(
-        "List the supported ISO 20022 Exceptions & Investigations message "
-        "types (e.g. camt.056 payment cancellation request) and their names."
+        "List supported ISO 20022 Exceptions & Investigations message types.\n\n"
+        "Purpose:\n"
+        "Returns the catalog of supported E&I message identifiers (e.g. camt.056.001.12 "
+        "Payment Cancellation Request, camt.029.001.14 Resolution of Investigation) "
+        "and their human-readable definitions.\n\n"
+        "When to use:\n"
+        "- When discovering valid message_type parameters before generating or validating messages.\n"
+        "- When verifying schema version support for payment recall or resolution workflows.\n\n"
+        "When NOT to use:\n"
+        "- Do NOT use for payment initiation (pain) or statement (camt.053) messages.\n\n"
+        "Behavioral transparency:\n"
+        "Static catalogue retrieval; pure, deterministic, and side-effect-free."
     ),
 )
 def list_message_types() -> dict[str, Any]:
@@ -83,7 +93,17 @@ def list_message_types() -> dict[str, Any]:
 @server.tool(
     annotations=_PURE_READ,
     description=(
-        "Return the required top-level fields for an E&I message type."
+        "Get required schema fields for an ISO 20022 E&I message type.\n\n"
+        "Purpose:\n"
+        "Returns the list of mandatory top-level data fields required to construct a valid "
+        "message record (e.g. assignment identification, instruct team agent, and transaction arrays).\n\n"
+        "When to use:\n"
+        "- When preparing input payloads before calling generate_message.\n"
+        "- When validating payload completeness prior to XML serialization.\n\n"
+        "When NOT to use:\n"
+        "- Do NOT use with unsupported message types; discover supported types via list_message_types.\n\n"
+        "Behavioral transparency:\n"
+        "Deterministic field dictionary lookup; pure, read-only, and idempotent."
     ),
 )
 def get_required_fields(
@@ -102,11 +122,19 @@ def get_required_fields(
 @server.tool(
     annotations=_PURE_READ,
     description=(
-        "Generate a validated ISO 20022 E&I XML message from a record. For "
-        "camt.056, the record cancels/recalls a previously sent payment "
-        "(assignment ids + agent BICs + a list of 'transactions' with the "
-        "original payment references and a cancellation reason code). Output "
-        "is validated against the bundled XSD before it is returned."
+        "Generate a schema-validated ISO 20022 E&I XML message from a record.\n\n"
+        "Purpose:\n"
+        "Renders a complete, XSD-compliant ISO 20022 XML document (e.g. camt.056 payment cancellation "
+        "or camt.029 investigation resolution) from structured field dictionaries, validating the result "
+        "against the bundled official schema before returning.\n\n"
+        "When to use:\n"
+        "- When raising payment cancellation, recall, or investigation response messages for interbank transmission.\n"
+        "- When requiring guaranteed XSD-valid XML output for downstream payment processing.\n\n"
+        "When NOT to use:\n"
+        "- Do NOT use to validate pre-existing XML files without generating; use validate_xml instead.\n"
+        "- Do NOT pass incomplete records; check get_required_fields first.\n\n"
+        "Behavioral transparency:\n"
+        "Pure template rendering and in-memory schema validation; side-effect-free and idempotent."
     ),
 )
 def generate_message(
@@ -129,8 +157,18 @@ def generate_message(
 @server.tool(
     annotations=_PURE_READ,
     description=(
-        "Validate raw ISO 20022 XML against an E&I message type's bundled XSD; "
-        "returns is_valid plus any schema errors."
+        "Validate raw ISO 20022 E&I XML against bundled XSD schemas.\n\n"
+        "Purpose:\n"
+        "Validates an XML string against the official bundled XSD schema for the specified "
+        "E&I message type, returning validation status and detailed schema violation diagnostics.\n\n"
+        "When to use:\n"
+        "- When inspecting received or pre-generated ISO 20022 E&I XML before ingesting or routing.\n"
+        "- When diagnosing schema structural, datatype, or constraint errors in message payloads.\n\n"
+        "When NOT to use:\n"
+        "- Do NOT use for payment initiation (pain) or statement (camt.053) documents.\n"
+        "- Do NOT pass unparseable binary content; requires valid XML text.\n\n"
+        "Behavioral transparency:\n"
+        "Pure, in-memory schema validation using local bundled XSDs; zero network access or side effects."
     ),
 )
 def validate_xml(
