@@ -10,6 +10,11 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0_OR_MIT-blue.svg)](LICENSE)
 [![Python Version](https://img.shields.io/pypi/pyversions/camt-exceptions.svg)](https://pypi.org/project/camt-exceptions/)
 
+<p align="center">
+  <img src=".github/demo.gif" alt="camt-exceptions Demo" width="100%" />
+</p>
+
+
 **Generate and validate ISO 20022 Exceptions & Investigations (E&I) `camt`
 messages — with an [MCP][mcp] server.** Starts with **`camt.056`** (FI-to-FI
 Payment Cancellation Request): the message a bank sends to *recall or cancel* a
