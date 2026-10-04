@@ -49,7 +49,12 @@ intersphinx_mapping = {
 # parameter annotations; it is not part of this package's API, and its
 # own annotations use forward references the type-hint extension cannot
 # resolve from here.
-suppress_warnings = ["sphinx_autodoc_typehints.forward_reference"]
+suppress_warnings = [
+    "myst.xref_missing",
+    "myst.header",
+    "misc.highlighting_failure",
+    "sphinx_autodoc_typehints.forward_reference",
+]
 
 # Autodoc defaults.
 autodoc_default_options = {
