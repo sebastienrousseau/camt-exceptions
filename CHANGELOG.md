@@ -5,10 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.0.19] - 2026-10-03
 
 ### Added
 
+<<<<<<< HEAD
+- Agent framework adapters in `camt_exceptions.adapters` wrapping all E&I
+  tools into native tool formats for LangChain (`as_langchain_tools`),
+  CrewAI (`as_crewai_tools`), and LlamaIndex (`as_llamaindex_tools`) via
+  optional extras.
+- Structured Tool Definition Quality Score (TDQS) descriptions across all 4
+  MCP tools with explicit Purpose, When to use, When NOT to use,
+  Behavioral transparency, and parameter constraints.
+||||||| 69f5b5e
+=======
 - Mutation testing of the tool handlers and the generator with mutmut 3,
   gated in CI by `scripts/mutation_gate.py` (workflow `mutation.yml`).
   Tools, the prompt and the resources are now registered in one block
@@ -26,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   <https://sebastienrousseau.github.io/camt-exceptions/> with the README,
   the API reference, the ADRs, the roadmap and this changelog; built with
   warnings as errors and deployed from `main`.
+>>>>>>> origin/main
 - `--transport streamable-http` and `--transport sse`, with `--host` and
   `--port`. Streamable HTTP serves both current protocol revisions
   (2026-07-28 stateless with `server/discover`, and 2025-11-25 with the
@@ -33,6 +44,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   server-sent events; `sse` serves the older HTTP+SSE transport. stdio
   stays the default and is unchanged. `--version` prints the version.
   ADR 0001 records the decision.
+- Governance and supply-chain files at suite parity: `AGENTS.md`, `Makefile`,
+  `DEVELOPMENT.md`, `.editorconfig`, `.pre-commit-config.yaml`,
+  `ARCHITECTURE.md`, `GOVERNANCE.md`, `ROADMAP.md`, `MAINTAINERS.md`,
+  `RELEASING.md`, `SUPPORT.md`, `CODE_OF_CONDUCT.md`, `CITATION.cff`,
+  `DCO.txt` and `docs/adr/`; OpenSSF Scorecard and DCO workflows;
+  Dependabot; every action in every workflow pinned by commit SHA.
+- Dual-licensing standard with full Apache-2.0 `LICENSE`, `LICENSE-APACHE`,
+  `LICENSE-MIT`, and `LICENSES/` tree.
 
 ### Fixed
 

@@ -164,33 +164,73 @@ def required_fields_resource(message_type: str) -> str:
 # docstring and signature, and clients list the tools in this order.
 server.tool(
     annotations=_PURE_READ,
-    description=(
-        "List the supported ISO 20022 Exceptions & Investigations message "
-        "types (e.g. camt.056 payment cancellation request) and their names."
-    ),
+    description="""List supported ISO 20022 Exceptions & Investigations message types.
+
+Purpose:
+Returns the catalog of supported E&I message identifiers (e.g. camt.056.001.12 Payment Cancellation Request, camt.029.001.14 Resolution of Investigation) and their human-readable definitions.
+
+When to use:
+- When discovering valid message_type parameters before generating or validating messages.
+- When verifying schema version support for payment recall or resolution workflows.
+
+When NOT to use:
+- Do NOT use for payment initiation (pain) or statement (camt.053) messages.
+
+Behavioral transparency:
+Static catalogue retrieval; pure, deterministic, and side-effect-free.""",
 )(list_message_types)
 server.tool(
     annotations=_PURE_READ,
-    description=(
-        "Return the required top-level fields for an E&I message type."
-    ),
+    description="""Get required schema fields for an ISO 20022 E&I message type.
+
+Purpose:
+Returns the list of mandatory top-level data fields required to construct a valid message record (e.g. assignment identification, instruct team agent, and transaction arrays).
+
+When to use:
+- When preparing input payloads before calling generate_message.
+- When validating payload completeness prior to XML serialization.
+
+When NOT to use:
+- Do NOT use with unsupported message types; discover supported types via list_message_types.
+
+Behavioral transparency:
+Deterministic field dictionary lookup; pure, read-only, and idempotent.""",
 )(get_required_fields)
 server.tool(
     annotations=_PURE_READ,
-    description=(
-        "Generate a validated ISO 20022 E&I XML message from a record. For "
-        "camt.056, the record cancels/recalls a previously sent payment "
-        "(assignment ids + agent BICs + a list of 'transactions' with the "
-        "original payment references and a cancellation reason code). Output "
-        "is validated against the bundled XSD before it is returned."
-    ),
+    description="""Generate a schema-validated ISO 20022 E&I XML message from a record.
+
+Purpose:
+Renders a complete, XSD-compliant ISO 20022 XML document (e.g. camt.056 payment cancellation or camt.029 investigation resolution) from structured field dictionaries, validating the result against the bundled official schema before returning.
+
+When to use:
+- When raising payment cancellation, recall, or investigation response messages for interbank transmission.
+- When requiring guaranteed XSD-valid XML output for downstream payment processing.
+
+When NOT to use:
+- Do NOT use to validate pre-existing XML files without generating; use validate_xml instead.
+- Do NOT pass incomplete records; check get_required_fields first.
+
+Behavioral transparency:
+Pure template rendering and in-memory schema validation; side-effect-free and idempotent.""",
 )(generate_message)
 server.tool(
     annotations=_PURE_READ,
-    description=(
-        "Validate raw ISO 20022 XML against an E&I message type's bundled XSD; "
-        "returns is_valid plus any schema errors."
-    ),
+    description="""Validate raw ISO 20022 E&I XML against bundled XSD schemas.
+
+Purpose:
+Validates an XML string against the official bundled XSD schema for the specified E&I message type, returning validation status and detailed schema violation diagnostics.
+
+When to use:
+- When inspecting received or pre-generated ISO 20022 E&I XML before ingesting or routing.
+- When diagnosing schema structural, datatype, or constraint errors in message payloads.
+
+When NOT to use:
+- Do NOT use for payment initiation (pain) or statement (camt.053) documents.
+- Do NOT pass unparseable binary content; requires valid XML text.
+
+Behavioral transparency:
+Pure, in-memory schema validation using local bundled XSDs; zero network access or side effects.""",
 )(validate_xml)
 server.prompt(
     title="Build an Exceptions & Investigations message",

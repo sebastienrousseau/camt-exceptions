@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "camt-exceptions"
-version = "0.0.18"
+version = "0.0.19"
 description = "Generate and validate ISO 20022 Exceptions & Investigations (E&I) camt messages -- camt.056 Payment Cancellation Request and camt.029 Resolution of Investigation -- with an MCP server."
 authors = ["Sebastien Rousseau <sebastian.rousseau@gmail.com>"]
 license = "Apache-2.0 OR MIT"
@@ -33,14 +33,20 @@ python = ">=3.10,<4.0"
 mcp = ">=1.2,<3"
 jinja2 = ">=3.0"
 xmlschema = ">=2.0"
-
-# Transitive, via `mcp` -> `pyjwt[crypto]`. Nothing in this tree
-# constrains it, so a resolver is free to pick a version in the
-# >=44.0.0,<50.0.0 range that GHSA flags as high severity. Floored
-# here so the patched line is the only resolvable one; the pins in
-# requirements/ already sit at 50.0.0.
+# Optional agent-framework adapters (see camt_exceptions/adapters.py).
+langchain-core = { version = ">=0.2", optional = true }
+crewai = { version = ">=0.51", optional = true }
+llama-index-core = { version = ">=0.10", optional = true }
+# Transitive, via `mcp` -> `pyjwt[crypto]`. Floored here to avoid vulnerable versions.
 cryptography = ">=50.0.0"
+
+[tool.poetry.extras]
+langchain = ["langchain-core"]
+crewai = ["crewai"]
+llamaindex = ["llama-index-core"]
+
 [tool.poetry.group.dev.dependencies]
+
 pytest = ">=9.0.3,<10.0.0"
 pytest-cov = ">=6.0.0,<8.0.0"
 black = "^26.3.1"
@@ -198,6 +204,17 @@ disallow_untyped_decorators = false
 
 [[tool.mypy.overrides]]
 module = ["mcp.*", "xmlschema.*", "jinja2.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Agent frameworks are optional extras, lazily imported by adapters.py and not
+# present when type-checking the package in isolation.
+module = [
+    "langchain_core.*",
+    "crewai.*",
+    "crewai_tools.*",
+    "llama_index.*",
+]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
