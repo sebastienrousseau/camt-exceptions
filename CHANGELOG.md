@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+<<<<<<< HEAD
 - Agent framework adapters in `camt_exceptions.adapters` wrapping all E&I
   tools into native tool formats for LangChain (`as_langchain_tools`),
   CrewAI (`as_crewai_tools`), and LlamaIndex (`as_llamaindex_tools`) via
@@ -16,6 +17,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Structured Tool Definition Quality Score (TDQS) descriptions across all 4
   MCP tools with explicit Purpose, When to use, When NOT to use,
   Behavioral transparency, and parameter constraints.
+||||||| 69f5b5e
+=======
+- Mutation testing of the tool handlers and the generator with mutmut 3,
+  gated in CI by `scripts/mutation_gate.py` (workflow `mutation.yml`).
+  Tools, the prompt and the resources are now registered in one block
+  instead of with decorators, because mutmut never mutates a decorated
+  function; the catalogue a client sees is unchanged.
+- Property-based tests (Hypothesis) over the logic this package owns:
+  every generated camt.056 and camt.029 message validates against its
+  XSD whatever the record holds, every missing required field is named,
+  an unknown message type always yields an `{"error": ...}` payload,
+  `validate_xml` never raises and its report is internally consistent,
+  the resources agree with the tools, and the prompt is a pure function
+  of its argument.
+- A 100% docstring gate (`interrogate`) in the lint job.
+- A rendered documentation site (Sphinx, furo) at
+  <https://sebastienrousseau.github.io/camt-exceptions/> with the README,
+  the API reference, the ADRs, the roadmap and this changelog; built with
+  warnings as errors and deployed from `main`.
+>>>>>>> origin/main
 - `--transport streamable-http` and `--transport sse`, with `--host` and
   `--port`. Streamable HTTP serves both current protocol revisions
   (2026-07-28 stateless with `server/discover`, and 2025-11-25 with the
@@ -31,6 +52,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Dependabot; every action in every workflow pinned by commit SHA.
 - Dual-licensing standard with full Apache-2.0 `LICENSE`, `LICENSE-APACHE`,
   `LICENSE-MIT`, and `LICENSES/` tree.
+
+### Fixed
+
+- `validate_xml` reports malformed input (empty, not XML, unbalanced
+  tags) as `is_valid: false` with a `not well-formed XML: ...` error
+  instead of raising. Before, the exception escaped the tool's
+  `ValueError` translation and reached the client as a bare error, and
+  a string that did not start with `<` was handed to xmlschema as a
+  file path to open, so the message named a path on the server.
 
 ### Changed
 

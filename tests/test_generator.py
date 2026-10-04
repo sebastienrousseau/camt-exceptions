@@ -15,6 +15,8 @@
 
 """Tests for the E&I generation engine (camt.056)."""
 
+import re
+
 import jinja2
 import pytest
 
@@ -45,8 +47,21 @@ def record():
 
 
 def test_list_message_types():
-    types = {t["message_type"] for t in generator.list_message_types()}
-    assert MT in types
+    types = generator.list_message_types()
+    assert {
+        "message_type": MT,
+        "name": "FI to FI Payment Cancellation Request",
+    } in types
+    assert [t["message_type"] for t in types] == list(generator.MESSAGE_TYPES)
+
+
+def test_message_spec_holds_its_fields():
+    spec = generator.MessageSpec("camt.999.001.01", "Probe", ("a", "b"))
+    assert (spec.message_type, spec.name, spec.required) == (
+        "camt.999.001.01",
+        "Probe",
+        ("a", "b"),
+    )
 
 
 def test_get_required_fields():
@@ -55,8 +70,12 @@ def test_get_required_fields():
 
 
 def test_get_required_fields_unknown_raises():
-    with pytest.raises(ValueError, match="unsupported message type"):
+    with pytest.raises(ValueError) as info:
         generator.get_required_fields("camt.999.001.01")
+    assert str(info.value) == (
+        "unsupported message type 'camt.999.001.01'; "
+        "supported: camt.029.001.14, camt.056.001.12"
+    )
 
 
 def test_generate_message_is_xsd_valid(record):
@@ -97,14 +116,33 @@ def test_generate_message_rejects_invalid_output(monkeypatch, record):
     generator._template.cache_clear()
     bad = jinja2.Environment(autoescape=True).from_string("<Document/>")
     monkeypatch.setattr(generator, "_template", lambda mt: bad)
-    with pytest.raises(ValueError, match="failed XSD validation"):
+    with pytest.raises(ValueError) as info:
         generator.generate_message(MT, record)
+    # The refusal carries the schema's own first line for the very
+    # document validate_xml would report on (xmlschema prints the
+    # element's object address in that line, so it is masked).
+    reason = generator.validate_xml(MT, "<Document/>")["errors"][0]
+    mask = re.compile(r" at 0x[0-9a-f]+")
+    assert mask.sub("", str(info.value)) == mask.sub(
+        "", f"generated {MT} failed XSD validation: {reason}"
+    )
+
+
+def test_template_is_read_from_the_bundled_file(record):
+    # The compiled template is cached per process; clearing the cache
+    # forces the read from the package data so a wrong path or name
+    # cannot hide behind a warm cache.
+    generator._template.cache_clear()
+    xml = generator.generate_message(MT, record)
+    assert "<FIToFIPmtCxlReq>" in xml
+    assert generator.validate_xml(MT, xml)["is_valid"] is True
 
 
 def test_validate_xml_detects_invalid():
     result = generator.validate_xml(MT, "<Document>not valid</Document>")
     assert result["is_valid"] is False
-    assert result["errors"]
+    assert len(result["errors"]) == 1
+    assert result["errors"][0].startswith("failed validating ")
 
 
 def test_validate_xml_unknown_type_raises():
@@ -163,3 +201,19 @@ def test_camt029_missing_confirmation_code():
                 "creation_date_time": "2026-03-03T10:00:00",
             },
         )
+
+
+@pytest.mark.parametrize(
+    "xml", ["", "   ", "not xml at all", "<a>", "<a></b>"]
+)
+def test_validate_xml_reports_malformed_input_instead_of_raising(xml):
+    # Malformed input is a validation failure, not an exception: the MCP
+    # tool only translates ValueError into its error envelope, so anything
+    # else would reach the client as a bare "Error executing tool". A string
+    # that is not XML must also never be treated as a path to open.
+    result = generator.validate_xml(MT, xml)
+    assert result["is_valid"] is False
+    assert len(result["errors"]) == 1
+    assert result["errors"][0].startswith("not well-formed XML: ")
+    assert "line 1, column" in result["errors"][0]
+    assert "file:" not in result["errors"][0]

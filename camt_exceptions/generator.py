@@ -34,6 +34,7 @@ dropping their XSD + ``template.xml`` alongside and registering them in
 from __future__ import annotations
 
 import functools
+import io
 from importlib.resources import files
 from typing import Any
 
@@ -169,12 +170,24 @@ def validate_xml(message_type: str, xml: str) -> dict[str, Any]:
 
     Returns:
         ``{"message_type": ..., "is_valid": bool, "errors": [...]}`` -- never
-        raises on a validation failure (only on an unknown message type).
+        raises on a validation failure or on malformed XML (only on an
+        unknown message type).
     """
     _spec(message_type)
-    errors = [
-        str(e).splitlines()[0] for e in _schema(message_type).iter_errors(xml)
-    ]
+    # Wrapped in a stream so xmlschema always reads the argument as XML
+    # data: handed a bare string that does not start with ``<`` it would
+    # try to open it as a file path or URL instead, and the error would
+    # name a path on this machine.
+    try:
+        errors = [
+            str(e).splitlines()[0]
+            for e in _schema(message_type).iter_errors(io.StringIO(xml))
+        ]
+    except (xmlschema.XMLResourceError, SyntaxError) as exc:
+        # Not well-formed XML at all (xmlschema raises its own resource
+        # error on 3.x and the parser's ``ParseError``, a ``SyntaxError``,
+        # on 2.x). A validation report, not an exception, either way.
+        errors = [f"not well-formed XML: {str(exc).splitlines()[0]}"]
     return {
         "message_type": message_type,
         "is_valid": not errors,

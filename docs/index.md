@@ -8,6 +8,17 @@ banks exchange when a payment needs stopping, returning, or explaining.
 | `camt.056.001.12` | FI to FI Payment Cancellation Request |
 | `camt.029.001.14` | Resolution of Investigation |
 
+```{toctree}
+:maxdepth: 2
+:caption: Contents
+
+readme
+api
+adr/index
+roadmap
+changelog
+```
+
 ## The pair
 
 `camt.056` asks: *stop or return this payment.* `camt.029` answers: *here is
@@ -52,6 +63,27 @@ to get wrong: the benchmark in this repository did exactly that on its first
 run, timing the rejection path for one of the two types and reporting the
 result as throughput.
 
+## Install
+
+```sh
+pip install camt-exceptions        # Python 3.10+
+uvx camt-exceptions                # or run the MCP server without installing
+```
+
+## Transports
+
+```sh
+camt-exceptions-mcp                                   # stdio (default)
+camt-exceptions-mcp --transport streamable-http       # HTTP on 127.0.0.1:8000/mcp
+camt-exceptions-mcp --transport sse --port 8001       # the older HTTP+SSE transport
+```
+
+Streamable HTTP serves both current protocol revisions (2026-07-28
+stateless with `server/discover`, and 2025-11-25 with the `initialize`
+handshake) on one endpoint. The listener binds loopback unless told
+otherwise and carries no authentication; put it behind a gateway before
+binding a routable address. See ADR 0001 for the decision.
+
 ## Tools
 
 | Tool | Returns |
@@ -60,11 +92,15 @@ result as throughput.
 | `get_required_fields` | What a given type requires |
 | `generate_message` | `{"xml": ...}` or `{"error": ...}` |
 | `validate_xml` | `{"is_valid": bool, "errors": [...]}` |
-| `build_investigation_message` | Higher-level construction |
+
+The `build_investigation_message` prompt walks a client through the four
+tools in order; the `camt-exceptions://message-types` and
+`camt-exceptions://required-fields/{message_type}` resources expose the
+catalogue to clients that read resources rather than call tools.
 
 ## Performance
 
-[`benches/bench_investigations.py`](../benches/bench_investigations.py).
+[`benches/bench_investigations.py`](https://github.com/sebastienrousseau/camt-exceptions/blob/main/benches/bench_investigations.py).
 
 E&I messages are small — a few hundred bytes — so there is no size axis
 worth sweeping. The cost is per call, which is how they arrive: an
@@ -93,9 +129,29 @@ since timing it in-process reports the warm number.
 
 Both run standalone with no arguments and no network:
 
-- [`examples/01_cancel_a_payment.py`](../examples/01_cancel_a_payment.py)
-- [`examples/02_resolve_an_investigation.py`](../examples/02_resolve_an_investigation.py)
+- [`examples/01_cancel_a_payment.py`](https://github.com/sebastienrousseau/camt-exceptions/blob/main/examples/01_cancel_a_payment.py)
+- [`examples/02_resolve_an_investigation.py`](https://github.com/sebastienrousseau/camt-exceptions/blob/main/examples/02_resolve_an_investigation.py)
+
+## Quality gates
+
+Every change passes a 100% line and branch coverage gate, a 100%
+docstring gate (`interrogate`), property-based tests (Hypothesis), a
+mutation-testing floor over the tool handlers and the generator
+(`mutmut`), ruff, black and strict mypy, and a benchmark that runs in CI
+so it cannot rot.
+
+## Quick links
+
+- [Source on GitHub](https://github.com/sebastienrousseau/camt-exceptions)
+- [PyPI release](https://pypi.org/project/camt-exceptions/)
+- [The ISO 20022 MCP suite](https://github.com/sebastienrousseau/iso20022-mcp)
 
 ## Licence
 
 Apache-2.0 OR MIT, at your option.
+
+## Indices and tables
+
+- {ref}`genindex`
+- {ref}`modindex`
+- {ref}`search`

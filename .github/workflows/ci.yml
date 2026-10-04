@@ -32,7 +32,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .
-          pip install pytest pytest-cov
+          pip install pytest pytest-cov hypothesis
 
       # The pyproject addopts enforce --cov-branch --cov-fail-under=100, so a
       # coverage regression fails the build here.
@@ -68,7 +68,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install .
-          pip install ruff black mypy
+          pip install ruff black mypy interrogate
 
       - name: Ruff check
         run: ruff check camt_exceptions/ tests/ examples/ benches/
@@ -78,3 +78,8 @@ jobs:
 
       - name: Mypy
         run: mypy camt_exceptions/
+
+      # Every module, class and function carries a docstring; the gate is
+      # 100% so a new handler cannot ship undocumented.
+      - name: Docstring coverage
+        run: interrogate -c pyproject.toml camt_exceptions
