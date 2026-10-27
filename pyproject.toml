@@ -30,12 +30,16 @@ camt-exceptions-mcp = "camt_exceptions.server:main"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
-mcp = ">=1.2,<3"
+# GHSA-84m7-p3x7-pcfv affects mcp >=1.8.0,<1.30.0 and >=2.0.0,<2.2.0; both
+# ranges are excluded so no affected release can resolve.
+mcp = ">=1.30.0,!=2.0.*,!=2.1.*,<3"
 jinja2 = ">=3.0"
 xmlschema = ">=2.0"
 # Optional agent-framework adapters (see camt_exceptions/adapters.py).
 langchain-core = { version = ">=0.2", optional = true }
-crewai = { version = ">=0.51", optional = true }
+# crewai requires Python <3.14; without the marker Poetry cannot resolve the
+# project (>=3.10,<4.0) at all, which fails the release SBOM job.
+crewai = { version = ">=0.51", optional = true, python = "<3.14" }
 llama-index-core = { version = ">=0.10", optional = true }
 # Transitive, via `mcp` -> `pyjwt[crypto]`. Floored here to avoid vulnerable versions.
 cryptography = ">=50.0.0"
